@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<head>
+
+  <link rel="stylesheet" type="text/css" href="/css/styles.css"/>
+  <script type="text/javascript" src="/Javascript/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="/Javascript/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/Javascript/jquery.flip.min.js"></script>
+  <style type="text/css">
+      body {
+          margin: 0px;
+      }
+
+      #bg {
+          width: 100%;
+          height: 20%;
+          top: 0px;
+          left: 0px;
+          position: absolute;
+          filter: Alpha(opacity=70);
+          opacity: 0.7;
+          background: #000000;
+          display: none;
+      }
+
+      #popbox {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 30%;
+          top: 35%;
+          margin: -200px 0 0 -100px;
+          display: none;
+          font-size: 24px;
+          font-family: "微软雅黑";
+          color: #FFF;
+          text-align: center;
+      }
+
+      .chance {
+          color: #e60c6c;
+          font-size: 48px;
+          font-family: "微软雅黑";
+      }
+  </style>
+</head>
+
+<body>
+<div id="main">
+
+  <div class="sponsorListHolder">
+
+    <div class="top0"></div>
+    <div class="top"><img src="/images/sponsors/top.png"/></div>
+    <div class="center" id="game" onclick="pupopen();">
+      <div class="clear"></div>
+    </div>
+    <div class="bottom"><img src="/images/sponsors/shuoming.png"/></div>
+  </div>
+
+</div>
+<div id="bg"></div>
+<div id="popbox">您还有<span class="chance"><%= @user.number %></span>次机会
+  <a href="<%= logout_path %>" class="quit"></a>
+</div>
+
+
+<script type="text/javascript">
+    function pupopen() {
+        document.getElementById("bg").style.display = "block";
+        document.getElementById("popbox").style.display = "block";
+    }
+
+    function pupclose() {
+        document.getElementById("bg").style.display = "none";
+        document.getElementById("popbox").style.display = "none";
+        $('#game').empty();
+        initCard();
+    }
+    function pupclose1(image_name) {
+        document.getElementById("bg").style.display = "none";
+        document.getElementById("popbox").style.display = "none";
+        $('.center').html('<div class="win"><img src="images/sponsors/' + image_name + '"></div> <div class="clear"></div>');
+    }
+
+    function initCard() {
+        for (var i = 0; i < 4; i++) {
+            var card = $('<div class="sponsor" title="点击翻牌"><div class="sponsorFlip"></div><div class="sponsorData"><div class="sponsorDescription"></div></div></div>');
+            card.appendTo('#game');
+            card.bind('click', function () {
+                // 翻拍
+                <% if @user.number > 0 %>
+                flip($(this));
+                <% end %>
+            });
+        }
+    }
+
+    $(function () {
+        initCard();
+    });
+
+    function flip(elem) {
+
+        // data('flipped') is a flag we set when we flip the element:
+
+        if (!elem.data('flipped')) {
+            // Using the flip method defined by the plugin:
+
+            elem.flip({
+                        direction: 'lr',
+                        speed: 350,
+                        onBefore: function () {
+                            elem.html(elem.siblings('.sponsorData').html());
+                            $.ajax({
+                                url: '<%= aa_path %>',
+                                type: 'get',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data['status'] == 0) {
+                                        var btn_str = "";
+                                        switch (data['number']) {
+                                            case 2 :
+                                                elem.css("background-image", "url(/images/sponsors/4.png)");
+                                                btn_str = '<a href="javascript:;" class="resetGame" onclick="pupclose()"></a>';
+                                                break;
+                                            case 1 :
+                                                elem.css("background-image", "url(/images/sponsors/5.png)");
+                                                btn_str = '<a href="javascript:;" class="resetGame" onclick="pupclose()"></a>';
+                                                break;
+                                            case 0 :
+                                                elem.css("background-image", "url(/images/sponsors/6.png)");
+                                                btn_str = '<a href="<%= logout_path %>" class="quit">';
+                                                break;
+                                        }
+                                        $("#popbox").html('您还有<span class="chance">' + data['number'] + '</span>次机会<br/>' + btn_str);
+                                    }
+                                    else {
+                                        var btn_str = "";
+                                        switch (data['status']) {
+                                            case 1 :
+                                                elem.css("background-image", "url(/images/sponsors/1.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'one.png\')"></a>'
+                                                $("#popbox").html('<span class="chance"><img src="/images/first.png"></span><br/>' + btn_str);
+                                                break;
+                                            case 2 :
+                                                elem.css("background-image", "url(/images/sponsors/2.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'two.png\')"></a>'
+                                                $("#popbox").html('<span class="chance"><img src="/images/second.png"></span><br/>' + btn_str);
+                                                break;
+                                            case 3 :
+                                                elem.css("background-image", "url(/images/sponsors/3.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'three.png\')"></a>'
+                                                $("#popbox").html('<span class="chance"><img src="/images/third.png"></span><br/>' + btn_str);
+                                                break;
+                                        }
+
+                                    }
+                                }
+                            });
+                        },
+                        onEnd: function () {
+                        }
+                    }
+            )
+            ;
+            // Setting the flag:
+            elem.data('flipped', true);
+        } else {
+            elem.revertFlip();
+            elem.data('flipped', false)
+        }
+    }
+</script>
+<!--<script src="http://www.jq22.com/js/jq.js"></script>-->
+</body>
+
+

@@ -1,0 +1,15 @@
+
+<body>
+<div id="main">
+  <div class="top0"></div>
+  <div class="top"><img src="/images/aa.png"/></div>
+  <div class="bottom">
+    <%= form_for @user, :url => login_index_path, :method => :post do |f| %>
+        <div class="phone">
+          <%= f.text_field :tel,class:"text", placeholder:"填写真实手机号码，万一中了呢"%>
+          <%= f.submit "",class: "button" %>
+        </div>
+    <% end %>
+  </div>
+</div>
+</body>

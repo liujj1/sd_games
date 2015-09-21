@@ -1,0 +1,46 @@
+$.ajax({
+                                url: '<%= aa_path %>',
+                                type: 'get',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data['status'] == 0) {
+                                        var btn_str = "";
+                                        switch (data['number']) {
+                                            case 2 :
+                                                elem.css("background-image", "url(/images/sponsors/4.png)");
+                                                btn_str = '<a href="javascript:;" class="resetGame" onclick="pupclose()"></a>';
+                                                break;
+                                            case 1 :
+                                                elem.css("background-image", "url(/images/sponsors/5.png)");
+                                                btn_str = '<a href="javascript:;" class="resetGame" onclick="pupclose()"></a>';
+                                                break;
+                                            case 0 :
+                                                elem.css("background-image", "url(/images/sponsors/6.png)");
+                                                btn_str = '<a href="<%= logout_path %>" class="quit">';
+                                                break;
+                                        }
+                                        $("#popbox").html('您还有<span class="chance">' + data['number'] + '</span>次机会<br/>' + btn_str);
+                                    }
+                                    else {
+                                        var btn_str = "";
+                                        switch (data['status']) {
+                                            case 1 :
+                                                elem.css("background-image", "url(/images/sponsors/1.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'one.png\')"></a>';
+                                                $("#popbox").html('<span class="chance"><img src="/images/first.png"></span><br/>' + btn_str);
+                                                break;
+                                            case 2 :
+                                                elem.css("background-image", "url(/images/sponsors/2.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'two.png\')"></a>';
+                                                $("#popbox").html('<span class="chance"><img src="/images/second.png"></span><br/>' + btn_str);
+                                                break;
+                                            case 3 :
+                                                elem.css("background-image", "url(/images/sponsors/3.png)");
+                                                btn_str = '<a href="javascript:;" class="win0" onclick="pupclose1(\'three.png\')"></a>';
+                                                $("#popbox").html('<span class="chance"><img src="/images/third.png"></span><br/>' + btn_str);
+                                                break;
+                                        }
+
+                                    }
+                                }
+                            });
